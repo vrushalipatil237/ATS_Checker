@@ -3,17 +3,15 @@ import nltk
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 
-# Download punkt if not already present
 try:
     nltk.data.find("tokenizers/punkt")
 except LookupError:
-    print("punkt")
+    nltk.download("punkt")
 
-# Download stopwords if not already present
 try:
     nltk.data.find("corpora/stopwords")
 except LookupError:
-    print("stopwords")
+    nltk.download("stopwords")
     
 def clean_text(text):
     tokens = word_tokenize(text.lower())
