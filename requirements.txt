@@ -1,8 +1,7 @@
 streamlit
 pdfminer.six
-pandas
-nltk==3.8.1
-fpdf
-Pillow==10.0.0
-requests
 pytesseract
+opencv-python-headless
+nltk
+reportlab
+Pillow
