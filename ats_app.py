@@ -3,19 +3,20 @@ from extraction import extract_text_from_file
 from scoring import calculate_ats_score
 from pdf_report import generate_pdf_report
 
-# ===== NLTK setup =====
+# ========== NLTK Setup (FIX for punkt_tab error) ==========
 import nltk
 import os
 import shutil
 
-# Ensure clean setup and force download of correct tokenizer
+# Manually clear corrupted punkt folder
 try:
-    punkt_tab_path = os.path.join(nltk.data.find('tokenizers'), 'punkt_tab')
-    if os.path.exists(punkt_tab_path):
-        shutil.rmtree(punkt_tab_path, ignore_errors=True)
+    punkt_path = os.path.join(nltk.data.find('tokenizers'), 'punkt')
+    if os.path.exists(punkt_path):
+        shutil.rmtree(punkt_path)
 except:
-    pass  # Safe to ignore if not present
+    pass  # Safe to ignore
 
+# Re-download clean data
 nltk.download('punkt')
 nltk.download('stopwords')
 
