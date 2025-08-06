@@ -1,9 +1,7 @@
 streamlit
-pytesseract
 opencv-python-headless
-Pillow
+Pillow==10.0.0
 pdfminer.six
 nltk==3.8.1
 pandas
 fpdf
-Pillow==10.0.0
