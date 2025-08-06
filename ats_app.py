@@ -11,14 +11,24 @@ import tempfile
 import pandas as pd
 
 # Set NLTK data directory inside your app
-nltk.download('punkt')
-nltk.download('stopwords')
+nltk.download('punkt', quiet=True)
+nltk.download('stopwords', quiet=True)
+try:
+    st.write("NLTK punkt data path:", nltk.data.find('tokenizers/punkt/english.pickle'))
+except LookupError:
+    st.error("NLTK punkt data not found!")
+    
 nltk_data_path = os.path.join(os.path.dirname(__file__), "nltk_data")
 nltk.data.path.append(nltk_data_path)
 print(nltk.data.find('tokenizers/punkt/english.pickle'))
 print("NLTK data paths:", nltk.data.path)
 print("Looking for 'punkt':", nltk.data.find('tokenizers/punkt/english.pickle'))
 
+# Clean and tokenize text
+def clean_text(text):
+    tokens = word_tokenize(text.lower(), language='english')
+    stop_words = set(stopwords.words('english'))
+    return set(word for word in tokens if word.isalpha() and word not in stop_words)
 
 # Extract text from PDF
 def extract_text_from_pdf(file_path):
@@ -43,12 +53,6 @@ def extract_text_from_file(uploaded_file):
         return extract_text_from_image(temp_file_path)
     else:
         return ""
-
-# Clean and tokenize text
-def clean_text(text):
-    tokens = word_tokenize(text.lower())
-    stop_words = set(stopwords.words('english'))
-    return set(word for word in tokens if word.isalpha() and word not in stop_words)
 
 # Calculate ATS score
 def calculate_ats_score(resume_text, job_description):
