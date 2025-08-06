@@ -41,7 +41,7 @@ st.title("📄 ATS Resume Score Checker")
 
 with st.sidebar:
     st.header("Upload & Inputs")
-    uploaded_file = st.file_uploader("Upload Resume (PDF, PNG, JPG)", type=['pdf', 'png', 'jpg', 'jpeg'])
+    uploaded_file = st.file_uploader("Upload Resume (PDF or Image)", type=['pdf', 'png', 'jpg', 'jpeg'])
     job_description = st.text_area("Paste Job Description", height=200)
     show_raw_resume = st.checkbox("Show Extracted Resume Text")
     show_raw_jd = st.checkbox("Show Job Description Text")
