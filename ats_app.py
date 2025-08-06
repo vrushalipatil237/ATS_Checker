@@ -6,41 +6,22 @@ from pdfminer.high_level import extract_text
 import nltk
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
-import os
 import tempfile
-import pandas as pd
 
-# Set NLTK data directory inside your app
-nltk.download('punkt', quiet=True)
-nltk.download('stopwords', quiet=True)
-try:
-    st.write("NLTK punkt data path:", nltk.data.find('tokenizers/punkt/english.pickle'))
-except LookupError:
-    st.error("NLTK punkt data not found!")
-    
-nltk_data_path = os.path.join(os.path.dirname(__file__), "nltk_data")
-nltk.data.path.append(nltk_data_path)
-print(nltk.data.find('tokenizers/punkt/english.pickle'))
-print("NLTK data paths:", nltk.data.path)
-print("Looking for 'punkt':", nltk.data.find('tokenizers/punkt/english.pickle'))
+# Download required NLTK data once (can comment out after first run)
+nltk.download('punkt')
+nltk.download('stopwords')
 
-# Clean and tokenize text
-def clean_text(text):
-    tokens = word_tokenize(text.lower(), language='english')
-    stop_words = set(stopwords.words('english'))
-    return set(word for word in tokens if word.isalpha() and word not in stop_words)
+# --- Functions ---
 
-# Extract text from PDF
 def extract_text_from_pdf(file_path):
     return extract_text(file_path)
 
-# Extract text from image
 def extract_text_from_image(file_path):
     img = cv2.imread(file_path)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     return pytesseract.image_to_string(img)
 
-# Determine file type and extract text
 def extract_text_from_file(uploaded_file):
     suffix = uploaded_file.name.lower()
     with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as temp_file:
@@ -54,7 +35,11 @@ def extract_text_from_file(uploaded_file):
     else:
         return ""
 
-# Calculate ATS score
+def clean_text(text):
+    tokens = word_tokenize(text.lower())
+    stop_words = set(stopwords.words('english'))
+    return set(word for word in tokens if word.isalpha() and word not in stop_words)
+
 def calculate_ats_score(resume_text, job_description):
     resume_words = clean_text(resume_text)
     jd_words = clean_text(job_description)
@@ -64,44 +49,81 @@ def calculate_ats_score(resume_text, job_description):
     score = (len(matched) / total * 100) if total > 0 else 0
     return round(score, 2), matched, jd_words - matched
 
-# ---------- Streamlit App ----------
-st.set_page_config(page_title="ATS Score Checker", layout="centered")
-st.title("📄 ATS Resume Score Checker")
+# --- Streamlit UI ---
 
-st.markdown("""
-Upload your **resume (PDF, PNG, JPG)** and paste a **job description** to check how well your resume matches the job.
-""")
+# Inject custom CSS styles
+st.markdown(
+    """
+    <style>
+    .main {
+        background-color: #f9fafb;
+        color: #0f172a;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .stButton>button {
+        background-color: #2563eb;
+        color: white;
+        border-radius: 8px;
+        padding: 10px 20px;
+        font-size: 16px;
+        font-weight: 600;
+        border: none;
+        transition: background-color 0.3s ease;
+    }
+    .stButton>button:hover {
+        background-color: #1d4ed8;
+        cursor: pointer;
+    }
+    textarea {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-size: 14px;
+    }
+    .block-container {
+        padding: 2rem 3rem;
+        max-width: 900px;
+        margin: auto;
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 0 15px rgb(0 0 0 / 0.1);
+    }
+    .title {
+        text-align: center;
+        color: #2563eb;
+        font-weight: 800;
+        margin-bottom: 0;
+        font-size: 36px;
+    }
+    .subtitle {
+        text-align: center;
+        color: #64748b;
+        margin-top: 0;
+        margin-bottom: 30px;
+        font-size: 18px;
+        font-weight: 500;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
-uploaded_file = st.file_uploader("📤 Upload Resume", type=['pdf', 'png', 'jpg', 'jpeg'])
-job_description = st.text_area("📝 Paste Job Description Here", height=200)
+st.markdown('<div class="block-container">', unsafe_allow_html=True)
 
-if uploaded_file and job_description:
-    with st.spinner("Extracting and analyzing..."):
-        resume_text = extract_text_from_file(uploaded_file)
-        score, matched, missing = calculate_ats_score(resume_text, job_description)
+st.markdown('<h1 class="title">📄 ATS Resume Score Checker</h1>', unsafe_allow_html=True)
+st.markdown('<p class="subtitle">Upload your resume document and paste the job description below.</p>', unsafe_allow_html=True)
 
-    st.success(f"✅ ATS Score: **{score}%**")
-    st.markdown(f"**✔️ Matched Keywords ({len(matched)}):** {', '.join(sorted(matched))}")
-    st.markdown(f"**❌ Missing Keywords ({len(missing)}):** {', '.join(sorted(missing))}")
+uploaded_file = st.file_uploader("📤 Upload Resume (PDF, PNG, JPG)", type=['pdf', 'png', 'jpg', 'jpeg'])
 
-    # Prepare downloadable report
-    max_len = max(len(matched), len(missing))
-    matched_list = list(matched) + [''] * (max_len - len(matched))
-    missing_list = list(missing) + [''] * (max_len - len(missing))
+job_description = st.text_area("📝 Paste Job Description Here", height=180)
 
-    report_df = pd.DataFrame({
-        "Matched Keywords": matched_list,
-        "Missing Keywords": missing_list
-    })
+if st.button("Calculate ATS Score"):
+    if uploaded_file and job_description.strip():
+        with st.spinner("Extracting text and calculating score..."):
+            resume_text = extract_text_from_file(uploaded_file)
+            score, matched, missing = calculate_ats_score(resume_text, job_description)
+        st.success(f"✅ ATS Score: **{score}%**")
+        st.markdown(f"**✔️ Matched Keywords ({len(matched)}):** {', '.join(sorted(matched))}")
+        st.markdown(f"**❌ Missing Keywords ({len(missing)}):** {', '.join(sorted(missing))}")
+    else:
+        st.warning("⚠️ Please upload a resume file and enter a job description.")
 
-    csv_data = report_df.to_csv(index=False)
-
-    st.download_button(
-        label="📥 Download ATS Report as CSV",
-        data=csv_data,
-        file_name="ats_report.csv",
-        mime="text/csv"
-    )
-
-elif uploaded_file or job_description:
-    st.info("Please provide both a resume and job description to proceed.")
+st.markdown('</div>', unsafe_allow_html=True)
