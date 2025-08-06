@@ -3,6 +3,6 @@ pytesseract
 opencv-python-headless
 Pillow
 pdfminer.six
-nltk==3.8.1
+nltk
 pandas
 fpdf
