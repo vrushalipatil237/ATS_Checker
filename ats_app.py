@@ -14,6 +14,8 @@ import pandas as pd
 nltk_data_path = os.path.join(os.path.dirname(__file__), "nltk_data")
 nltk.data.path.append(nltk_data_path)
 print(nltk.data.find('tokenizers/punkt/english.pickle'))
+print("NLTK data paths:", nltk.data.path)
+print("Looking for 'punkt':", nltk.data.find('tokenizers/punkt/english.pickle'))
 
 
 # Extract text from PDF
