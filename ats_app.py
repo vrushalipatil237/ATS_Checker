@@ -11,6 +11,8 @@ import tempfile
 import pandas as pd
 
 # Set NLTK data directory inside your app
+nltk.download('punkt')
+nltk.download('stopwords')
 nltk_data_path = os.path.join(os.path.dirname(__file__), "nltk_data")
 nltk.data.path.append(nltk_data_path)
 print(nltk.data.find('tokenizers/punkt/english.pickle'))
