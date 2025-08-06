@@ -1,7 +1,7 @@
 import re
 import nltk
-# from nltk.tokenize import word_tokenize
-# from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
 
 # Download punkt if not already present
 try:
