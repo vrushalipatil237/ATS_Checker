@@ -1,22 +1,18 @@
 import re
-import nltk
-from nltk.tokenize import word_tokenize
-from nltk.corpus import stopwords
 
-try:
-    nltk.data.find("tokenizers/punkt")
-except LookupError:
-    nltk.download("punkt")
+# Basic English stopwords set
+basic_stopwords = {
+    "a", "an", "the", "and", "or", "but", "if", "while", "with", "to", "from",
+    "of", "in", "on", "for", "by", "at", "is", "are", "was", "were", "be", "been",
+    "has", "had", "have", "do", "does", "did", "can", "could", "should", "would",
+    "this", "that", "these", "those", "as", "it", "its", "he", "she", "they",
+    "them", "his", "her", "you", "your", "i", "we", "our", "us", "me", "my", "not"
+}
 
-try:
-    nltk.data.find("corpora/stopwords")
-except LookupError:
-    nltk.download("stopwords")
-    
 def clean_text(text):
-    tokens = word_tokenize(text.lower())
-    stop_words = set(stopwords.words('english'))
-    return set(word for word in tokens if word.isalpha() and word not in stop_words)
+    text = text.lower()
+    words = re.findall(r'\b[a-z]{2,}\b', text)  # keep only alphabetic words, min 2 letters
+    return set(word for word in words if word not in basic_stopwords)
 
 def keyword_match_score(resume_text, job_description):
     resume_words = clean_text(resume_text)
@@ -30,7 +26,7 @@ def contact_info_score(resume_text):
     email_present = bool(re.search(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b', resume_text))
     phone_present = bool(re.search(r'(\+?\d{1,3}[-.\s]?)?(\(?\d{3}\)?[-.\s]?)?\d{3}[-.\s]?\d{4}', resume_text))
     linkedin_present = 'linkedin.com' in resume_text.lower()
-    
+
     score = (email_present + phone_present + linkedin_present) / 3 * 100
     details = {
         "Email": email_present,
