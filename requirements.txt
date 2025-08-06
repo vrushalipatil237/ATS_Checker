@@ -1,0 +1,6 @@
+streamlit
+pytesseract
+opencv-python
+Pillow
+pdfminer.six
+nltk
