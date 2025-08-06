@@ -1,12 +1,13 @@
 from pdfminer.high_level import extract_text
 import tempfile
 import requests
+import os
 
 def extract_text_from_pdf(file_path):
     return extract_text(file_path)
 
 def extract_text_from_image(file_path):
-    api_key = 'helloworld'  # Replace with your actual key if needed
+    api_key = os.getenv("OCR_API_KEY", "helloworld")  # Use Streamlit secrets for deployment
     with open(file_path, 'rb') as image_file:
         response = requests.post(
             'https://api.ocr.space/parse/image',
