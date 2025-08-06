@@ -1,5 +1,9 @@
-streamlit==1.26.1
-pdfminer.six==20221105
-fpdf==1.7.2
+streamlit
+pytesseract
+opencv-python-headless
+Pillow
+pdfminer.six
 nltk==3.8.1
+pandas
+fpdf
 Pillow==10.0.0
