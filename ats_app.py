@@ -2,6 +2,13 @@ import streamlit as st
 from extraction import extract_text_from_file
 from scoring import calculate_ats_score
 from pdf_report import generate_pdf_report
+# ats_app.py
+
+import nltk
+
+# Force download at app startup
+nltk.download('punkt')
+nltk.download('stopwords')
 
 st.set_page_config(page_title="ATS Resume Score Checker", layout="wide")
 
