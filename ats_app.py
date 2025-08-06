@@ -75,7 +75,6 @@ def generate_pdf_report(score, matched, missing, job_description, resume_text):
     pdf.set_font("Arial", size=11)
     pdf.multi_cell(0, 8, ", ".join(sorted(missing)) if missing else "None")
 
-    # Optionally add job description and resume snippets
     pdf.set_font("Arial", 'B', 12)
     pdf.ln(10)
     pdf.cell(0, 10, "Job Description (excerpt):", ln=True)
@@ -90,11 +89,11 @@ def generate_pdf_report(score, matched, missing, job_description, resume_text):
     resume_excerpt = (resume_text[:500] + '...') if len(resume_text) > 500 else resume_text
     pdf.multi_cell(0, 8, resume_excerpt)
 
-    pdf_output = BytesIO()
-    pdf.output(pdf_output)
-    pdf_output.seek(0)
-    return pdf_output
+    # Generate PDF as a byte string and encode to latin1
+    pdf_bytes = pdf.output(dest='S').encode('latin1')
 
+    return pdf_bytes
+    
 # -------- Streamlit UI --------
 
 st.set_page_config(page_title="ATS Resume Score Checker", layout="wide")
