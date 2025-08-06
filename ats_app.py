@@ -16,9 +16,13 @@ try:
 except:
     pass  # Safe to ignore
 
+# Set custom nltk_data path
+nltk_path = os.path.join(os.path.dirname(__file__), "nltk_data")
+nltk.data.path.append(nltk_path)
+
 # Re-download clean data
-nltk.download('punkt')
-nltk.download('stopwords')
+#nltk.download('punkt')
+#nltk.download('stopwords')
 
 # ===== Streamlit UI Config =====
 st.set_page_config(page_title="ATS Resume Score Checker", layout="wide")
