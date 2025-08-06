@@ -1,21 +1,24 @@
-import pytesseract
-import cv2
 from pdfminer.high_level import extract_text
 import tempfile
-from nltk.tokenize import word_tokenize
-from nltk.corpus import stopwords
-import nltk
-
-nltk.download('punkt')
-nltk.download('stopwords')
+import requests
 
 def extract_text_from_pdf(file_path):
     return extract_text(file_path)
 
 def extract_text_from_image(file_path):
-    img = cv2.imread(file_path)
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    return pytesseract.image_to_string(img)
+    api_key = 'helloworld'  # Replace with your actual key if needed
+    with open(file_path, 'rb') as image_file:
+        response = requests.post(
+            'https://api.ocr.space/parse/image',
+            files={'filename': image_file},
+            data={'apikey': api_key, 'language': 'eng'}
+        )
+
+    result = response.json()
+    if result.get("IsErroredOnProcessing"):
+        return "Error: " + result.get("ErrorMessage", ["Unknown error"])[0]
+    else:
+        return result["ParsedResults"][0]["ParsedText"]
 
 def extract_text_from_file(uploaded_file):
     suffix = uploaded_file.name.lower()
