@@ -1,6 +1,4 @@
 streamlit==1.26.1
-pytesseract==0.3.10
-opencv-python-headless==4.8.0.74
 pdfminer.six==20221105
 fpdf==1.7.2
 nltk==3.8.1
