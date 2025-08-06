@@ -1,6 +1,6 @@
 streamlit
 pytesseract
-opencv-python
+opencv-python-headless
 Pillow
 pdfminer.six
 nltk
