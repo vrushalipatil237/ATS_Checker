@@ -2,14 +2,24 @@ import streamlit as st
 from extraction import extract_text_from_file
 from scoring import calculate_ats_score
 from pdf_report import generate_pdf_report
-# ats_app.py
 
+# ===== NLTK setup =====
 import nltk
+import os
+import shutil
 
-# Force download at app startup
+# Ensure clean setup and force download of correct tokenizer
+try:
+    punkt_tab_path = os.path.join(nltk.data.find('tokenizers'), 'punkt_tab')
+    if os.path.exists(punkt_tab_path):
+        shutil.rmtree(punkt_tab_path, ignore_errors=True)
+except:
+    pass  # Safe to ignore if not present
+
 nltk.download('punkt')
 nltk.download('stopwords')
 
+# ===== Streamlit UI Config =====
 st.set_page_config(page_title="ATS Resume Score Checker", layout="wide")
 
 st.markdown("""
@@ -46,6 +56,7 @@ st.markdown("""
 
 st.title("📄 ATS Resume Score Checker")
 
+# ===== Sidebar Inputs =====
 with st.sidebar:
     st.header("Upload & Inputs")
     uploaded_file = st.file_uploader("Upload Resume (PDF or Image)", type=['pdf', 'png', 'jpg', 'jpeg'])
@@ -53,6 +64,7 @@ with st.sidebar:
     show_raw_resume = st.checkbox("Show Extracted Resume Text")
     show_raw_jd = st.checkbox("Show Job Description Text")
 
+# ===== Main Logic =====
 if uploaded_file and job_description.strip():
     with st.spinner("Extracting text and calculating ATS score..."):
         resume_text = extract_text_from_file(uploaded_file)
@@ -74,6 +86,7 @@ if uploaded_file and job_description.strip():
         st.markdown("### Job Description Text:")
         st.write(job_description)
 
+    # ===== Downloadable PDF =====
     pdf_report = generate_pdf_report(overall_score, details, job_description, resume_text)
     st.download_button(
         label="📥 Download ATS Report as PDF",
